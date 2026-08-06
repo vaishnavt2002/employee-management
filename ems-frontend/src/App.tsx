@@ -1,17 +1,10 @@
 import './App.css'
+import AppRoutes from './routes/AppRoutes'
 
 function App() {
 
   return (
-    <div className="container mt-5">
-      <h1 className="text-primary">
-        Employee Management System
-      </h1>
-
-      <button className="btn btn-success">
-        Bootstrap Working
-      </button>
-    </div>
+    <AppRoutes/>
   )
 }
 
