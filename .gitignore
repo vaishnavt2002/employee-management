@@ -1,0 +1,31 @@
+# ===========================
+# React / Vite
+# ===========================
+ems-frontend/node_modules/
+ems-frontend/dist/
+ems-frontend/.vite/
+
+# Environment files
+ems-frontend/.env
+ems-frontend/.env.local
+
+# ===========================
+# Spring Boot / Maven
+# ===========================
+ems-backend/target/
+ems-backend/.mvn/wrapper/maven-wrapper.jar
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Environment
+.env
