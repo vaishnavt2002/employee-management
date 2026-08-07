@@ -1,5 +1,4 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import MainLayout from "../layout/MainLayout";
 import Home from "../pages/Home";
 import Dashboard from "../pages/Dashboard";
 import EmployeeList from "../pages/EmployeeList";
@@ -8,6 +7,7 @@ import EditEmployee from "../pages/EditEmployee";
 import EmployeeDetails from "../pages/EmployeeDetailis";
 import About from "../pages/About";
 import NotFound from "../pages/NotFound";
+import MainLayout from "../components/layout/MainLayout";
 
 function AppRoutes(){
     return(

@@ -1,24 +1,12 @@
-function getAllEmployees(){
+import { API_ENDPOINTS } from "../constants/api";
+import type { Employee } from "../constants/employee";
+import api from "./api";
 
+const employeeService = {
+    getAllEmployees: async (): Promise<Employee[]>=>{
+        const response = await api.get<Employee[]>(API_ENDPOINTS.EMPLOYEES);
+        return response.data;
+    }
 }
 
-function getEmployeeById(){
-
-}
-
-function createEmployee(){
-
-}
-
-function updateEmployee(){
-
-}
-
-function deleteEmployee(){
-
-}
-
-function searchEmployees(){
-
-}
-
+export default employeeService
