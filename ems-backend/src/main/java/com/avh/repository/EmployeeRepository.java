@@ -7,7 +7,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface EmployeeRepository extends JpaRepository<Employee, Long> {
-
+																																						
     List<Employee> findByEmployeeNameContainingIgnoreCase(String name);
 
     List<Employee> findByDepartmentIgnoreCase(String department);
