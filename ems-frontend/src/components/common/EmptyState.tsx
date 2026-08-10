@@ -2,9 +2,11 @@ interface EmptyStateProps {
   message: string;
 }
 
-function EmptyState ({ message }: EmptyStateProps) {
+const EmptyState = ({
+  message,
+}: EmptyStateProps) => {
   return (
-    <div className="alert alert-info mt-4">
+    <div className="alert alert-info text-center" role="alert">
       {message}
     </div>
   );
