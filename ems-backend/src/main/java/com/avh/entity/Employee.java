@@ -10,9 +10,6 @@ import java.time.LocalDate;
 
 @Entity
 @Table(name = "employees")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class Employee {
 
     @Id
