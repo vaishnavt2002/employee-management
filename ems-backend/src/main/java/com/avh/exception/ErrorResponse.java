@@ -8,8 +8,6 @@ import java.time.LocalDateTime;
 import java.util.Map;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class ErrorResponse {
     private LocalDateTime timestamp;
     private int status;
