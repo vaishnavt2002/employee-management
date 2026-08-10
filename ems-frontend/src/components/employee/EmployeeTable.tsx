@@ -1,37 +1,45 @@
 import type { Employee } from "../../constants/employee";
 
-interface EmployeeTableProps{
-    employees: Employee[]
+interface EmployeeTableProps {
+  employees: Employee[];
 }
 
-function EmployeeTable({employees}: EmployeeTableProps){
-    return (
-        <table className="table table-striped table-hover">
+const EmployeeTable = ({
+  employees,
+}: EmployeeTableProps) => {
+  return (
+    <div className="table-responsive">
+      <table className="table table-striped table-hover align-middle">
         <thead className="table-dark">
-            <tr>
+          <tr>
             <th>ID</th>
             <th>Name</th>
             <th>Email</th>
+            <th>Mobile</th>
             <th>Department</th>
             <th>Designation</th>
             <th>Salary</th>
-            </tr>
+            <th>Joining Date</th>
+          </tr>
         </thead>
 
         <tbody>
-            {employees.map((employee) => (
+          {employees.map((employee) => (
             <tr key={employee.id}>
-                <td>{employee.id}</td>
-                <td>{employee.employeeName}</td>
-                <td>{employee.email}</td>
-                <td>{employee.department}</td>
-                <td>{employee.designation}</td>
-                <td>{employee.salary}</td>
+              <td>{employee.id}</td>
+              <td>{employee.employeeName}</td>
+              <td>{employee.email}</td>
+              <td>{employee.mobile}</td>
+              <td>{employee.department}</td>
+              <td>{employee.designation}</td>
+              <td>{employee.salary}</td>
+              <td>{employee.joiningDate}</td>
             </tr>
-            ))}
+          ))}
         </tbody>
-        </table>
-    )
-}
+      </table>
+    </div>
+  );
+};
 
 export default EmployeeTable;
