@@ -10,6 +10,7 @@ import {
 } from "react-router-dom";
 
 import EmployeeTable from "../components/employee/EmployeeTable";
+import Pagination from "../components/common/Pagination";
 import Loading from "../components/common/Loading";
 import ErrorMessage from "../components/common/ErrorMessage";
 import EmptyState from "../components/common/EmptyState";
@@ -17,49 +18,61 @@ import EmptyState from "../components/common/EmptyState";
 import employeeService from "../services/employeeService";
 import type { Employee } from "../constants/employee";
 
+const PAGE_SIZE = 20;
+
 const EmployeeList = () => {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [isFirst, setIsFirst] = useState(true);
+  const [isLast, setIsLast] = useState(true);
 
   const location = useLocation();
   const navigate = useNavigate();
 
   const successMessage = location.state?.message;
 
-  const fetchEmployees = useCallback(async () => {
+  const fetchEmployees = useCallback(async (pageToFetch: number) => {
     try {
       setLoading(true);
       setError("");
 
-      const data =
-        await employeeService.getAllEmployees();
+      const data = await employeeService.getAllEmployees(pageToFetch, PAGE_SIZE);
 
-      setEmployees(data);
+      setEmployees(data.content);
+      setTotalPages(data.totalPages);
+      setIsFirst(data.first);
+      setIsLast(data.last);
+      setPage(data.number);
     } catch (error) {
-      console.error(
-        "Failed to fetch employees:",
-        error
-      );
-
-      setError(
-        "Failed to load employees. Please try again."
-      );
+      console.error("Failed to fetch employees:", error);
+      setError("Failed to load employees. Please try again.");
     } finally {
       setLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    fetchEmployees();
-  }, [fetchEmployees]);
+    fetchEmployees(page);
+  }, [page]);
 
   const handleAddEmployee = () => {
     navigate("/employees/add");
   };
 
   const handleRefresh = () => {
-    fetchEmployees();
+    fetchEmployees(page);
+  };
+
+  const handlePrev = () => {
+    if (!isFirst) setPage((p) => p - 1);
+  };
+
+  const handleNext = () => {
+    if (!isLast) setPage((p) => p + 1);
   };
 
   if (loading) {
@@ -138,6 +151,15 @@ const EmployeeList = () => {
 
           <EmployeeTable
             employees={employees}
+          />
+
+          <Pagination
+            currentPage={page}
+            totalPages={totalPages}
+            isFirst={isFirst}
+            isLast={isLast}
+            onPrev={handlePrev}
+            onNext={handleNext}
           />
         </>
       )}
