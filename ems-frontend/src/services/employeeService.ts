@@ -23,10 +23,56 @@ const employeeService = {
         );
         return response.data;
     },
+
+    getEmployeeById: async (id: number): Promise<Employee> => {
+        const response = await api.get<Employee>(`${API_ENDPOINTS.EMPLOYEES}/${id}`);
+        return response.data;
+    },
+
     createEmployee: async (employee: Employee): Promise<Employee> => {
         const response = await api.post<Employee>(API_ENDPOINTS.EMPLOYEES, employee);
         return response.data;
-    }
-}
+    },
 
-export default employeeService
+    updateEmployee: async (id: number, employee: Employee): Promise<Employee> => {
+        const response = await api.put<Employee>(`${API_ENDPOINTS.EMPLOYEES}/${id}`, employee);
+        return response.data;
+    },
+
+    deleteEmployee: async (id: number): Promise<void> => {
+        await api.delete(`${API_ENDPOINTS.EMPLOYEES}/${id}`);
+    },
+
+    searchByName: async (name: string): Promise<Employee[]> => {
+        const response = await api.get<Employee[]>(`${API_ENDPOINTS.EMPLOYEES}/search`, {
+            params: { name },
+        });
+        return response.data;
+    },
+
+    getByDepartment: async (department: string): Promise<Employee[]> => {
+        const response = await api.get<Employee[]>(
+            `${API_ENDPOINTS.EMPLOYEES}/department/${department}`
+        );
+        return response.data;
+    },
+
+    getByDesignation: async (designation: string): Promise<Employee[]> => {
+        const response = await api.get<Employee[]>(
+            `${API_ENDPOINTS.EMPLOYEES}/designation/${designation}`
+        );
+        return response.data;
+    },
+
+    sortBySalary: async (): Promise<Employee[]> => {
+        const response = await api.get<Employee[]>(`${API_ENDPOINTS.EMPLOYEES}/sort/salary`);
+        return response.data;
+    },
+
+    sortByJoiningDate: async (): Promise<Employee[]> => {
+        const response = await api.get<Employee[]>(`${API_ENDPOINTS.EMPLOYEES}/sort/joiningDate`);
+        return response.data;
+    },
+};
+
+export default employeeService;

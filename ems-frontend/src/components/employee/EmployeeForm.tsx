@@ -8,12 +8,14 @@ interface EmployeeFormProps {
   initialValues: Employee;
   onSubmit: (employee: Employee) => Promise<void>;
   isSubmitting?: boolean;
+  submitLabel?: string;
 }
 
 const EmployeeForm = ({
   initialValues,
   onSubmit,
   isSubmitting = false,
+  submitLabel = "Add Employee",
 }: EmployeeFormProps) => {
   const [employee, setEmployee] = useState<Employee>(initialValues);
   const [errors, setErrors] = useState<EmployeeFormErrors>({});
@@ -275,7 +277,7 @@ const EmployeeForm = ({
         className="btn btn-primary"
         disabled={isSubmitting}
       >
-        {isSubmitting ? "Saving..." : "Add Employee"}
+        {isSubmitting ? "Saving..." : submitLabel}
       </button>
     </form>
   );
