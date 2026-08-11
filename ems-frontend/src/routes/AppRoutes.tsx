@@ -4,7 +4,7 @@ import Dashboard from "../pages/Dashboard";
 import EmployeeList from "../pages/EmployeeList";
 import AddEmployee from "../pages/AddEmployee";
 import EditEmployee from "../pages/EditEmployee";
-import EmployeeDetails from "../pages/EmployeeDetailis";
+import EmployeeDetails from "../pages/EmployeeDetails";
 import About from "../pages/About";
 import NotFound from "../pages/NotFound";
 import MainLayout from "../components/layout/MainLayout";
