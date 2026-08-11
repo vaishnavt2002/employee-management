@@ -1,3 +1,4 @@
 export const API_ENDPOINTS = {
-    EMPLOYEES: "/employees"
+    EMPLOYEES: "/employees",
+    DASHBOARD: "/dashboard"
 }
