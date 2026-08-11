@@ -21,6 +21,36 @@ The project is a monorepo with two independent apps:
 
 ---
 
+## Screenshots
+
+### Home
+Landing page with quick links to Dashboard, Employees, Add Employee, and About.
+
+![Home page](./screenshots/home.png)
+
+### Employees
+Browse, search, filter, and sort employee records, with actions to view, edit, or delete each one.
+
+![Employees page](./screenshots/employees.png)
+
+### Dashboard
+Workforce statistics at a glance — total employees, department/designation counts, total salary expense, average salary, and breakdowns by department and designation.
+
+![Dashboard page](./screenshots/dashboard.png)
+
+### Add Employee
+Form to onboard a new employee, with department/designation dropdowns and field validation.
+
+![Add Employee form — top](./screenshots/add-employee-1.png)
+![Add Employee form — bottom](./screenshots/add-employee-2.png)
+
+### About
+Overview of the system and its key features.
+
+![About page](./screenshots/about.png)
+
+---
+
 ## Project Structure
 
 ```
