@@ -111,4 +111,10 @@ public class EmployeeServiceImpl implements EmployeeService {
         logger.info("Sorting employees by joining date");
         return employeeRepository.findAllByOrderByJoiningDateAsc();
     }
+    
+    @Override
+    public long getEmployeeCount() {
+        logger.info("Fetching total count of employees");
+        return employeeRepository.count();
+    }
 }
