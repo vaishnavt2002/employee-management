@@ -12,6 +12,16 @@ export interface PageResponse<T> {
     last: boolean;
 }
 
+export interface EmployeeFilterParams {
+    name?: string;
+    department?: string;
+    designation?: string;
+    sortBy?: string;
+    sortDir?: "asc" | "desc";
+    page?: number;
+    size?: number;
+}
+
 const employeeService = {
     getAllEmployees: async (
         page: number = 0,
@@ -43,34 +53,27 @@ const employeeService = {
         await api.delete(`${API_ENDPOINTS.EMPLOYEES}/${id}`);
     },
 
-    searchByName: async (name: string): Promise<Employee[]> => {
-        const response = await api.get<Employee[]>(`${API_ENDPOINTS.EMPLOYEES}/search`, {
-            params: { name },
-        });
-        return response.data;
-    },
+    // Combined search + filter + sort + pagination in a single request.
+    // Empty/undefined params are dropped so the backend treats them as "no filter".
+    filterEmployees: async (
+        filters: EmployeeFilterParams = {}
+    ): Promise<PageResponse<Employee>> => {
+        const params: Record<string, string | number> = {};
 
-    getByDepartment: async (department: string): Promise<Employee[]> => {
-        const response = await api.get<Employee[]>(
-            `${API_ENDPOINTS.EMPLOYEES}/department/${department}`
+        if (filters.name?.trim()) params.name = filters.name.trim();
+        if (filters.department) params.department = filters.department;
+        if (filters.designation) params.designation = filters.designation;
+        if (filters.sortBy) {
+            params.sortBy = filters.sortBy;
+            params.sortDir = filters.sortDir ?? "asc";
+        }
+        params.page = filters.page ?? 0;
+        params.size = filters.size ?? 10;
+
+        const response = await api.get<PageResponse<Employee>>(
+            `${API_ENDPOINTS.EMPLOYEES}/filter`,
+            { params }
         );
-        return response.data;
-    },
-
-    getByDesignation: async (designation: string): Promise<Employee[]> => {
-        const response = await api.get<Employee[]>(
-            `${API_ENDPOINTS.EMPLOYEES}/designation/${designation}`
-        );
-        return response.data;
-    },
-
-    sortBySalary: async (): Promise<Employee[]> => {
-        const response = await api.get<Employee[]>(`${API_ENDPOINTS.EMPLOYEES}/sort/salary`);
-        return response.data;
-    },
-
-    sortByJoiningDate: async (): Promise<Employee[]> => {
-        const response = await api.get<Employee[]>(`${API_ENDPOINTS.EMPLOYEES}/sort/joiningDate`);
         return response.data;
     },
 };

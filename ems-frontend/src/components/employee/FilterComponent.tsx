@@ -1,15 +1,18 @@
 import { DEPARTMENTS } from "../../constants/departments";
 import { DESIGNATIONS } from "../../constants/designations";
 
-export type SortOption = "" | "salary" | "joiningDate";
+export type SortOption = "" | "name" | "department" | "designation" | "salary" | "joiningDate";
+export type SortDir = "asc" | "desc";
 
 interface FilterComponentProps {
   department: string;
   designation: string;
   sortBy: SortOption;
+  sortDir: SortDir;
   onDepartmentChange: (department: string) => void;
   onDesignationChange: (designation: string) => void;
   onSortChange: (sortBy: SortOption) => void;
+  onSortDirChange: (sortDir: SortDir) => void;
   onReset: () => void;
   isLoading?: boolean;
 }
@@ -18,9 +21,11 @@ const FilterComponent = ({
   department,
   designation,
   sortBy,
+  sortDir,
   onDepartmentChange,
   onDesignationChange,
   onSortChange,
+  onSortDirChange,
   onReset,
   isLoading = false,
 }: FilterComponentProps) => {
@@ -66,8 +71,22 @@ const FilterComponent = ({
         disabled={isLoading}
       >
         <option value="">No Sorting</option>
+        <option value="name">Sort by Name</option>
+        <option value="department">Sort by Department</option>
+        <option value="designation">Sort by Designation</option>
         <option value="salary">Sort by Salary</option>
         <option value="joiningDate">Sort by Joining Date</option>
+      </select>
+
+      <select
+        className="form-select"
+        style={{ maxWidth: "150px" }}
+        value={sortDir}
+        onChange={(event) => onSortDirChange(event.target.value as SortDir)}
+        disabled={isLoading || !sortBy}
+      >
+        <option value="asc">Ascending</option>
+        <option value="desc">Descending</option>
       </select>
 
       <button

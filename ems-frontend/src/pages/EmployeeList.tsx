@@ -8,14 +8,15 @@ import ErrorMessage from "../components/common/ErrorMessage";
 import EmptyState from "../components/common/EmptyState";
 import ConfirmationDialog from "../components/common/ConfirmationDialog";
 import SearchBar from "../components/employee/SearchBar";
-import FilterComponent, { type SortOption } from "../components/employee/FilterComponent";
+import FilterComponent, {
+  type SortOption,
+  type SortDir,
+} from "../components/employee/FilterComponent";
 
 import employeeService from "../services/employeeService";
 import type { Employee } from "../constants/employee";
 
-const PAGE_SIZE = 20;
-
-type ViewMode = "all" | "search" | "filtered";
+const PAGE_SIZE = 10;
 
 const EmployeeList = () => {
   const [employees, setEmployees] = useState<Employee[]>([]);
@@ -24,13 +25,16 @@ const EmployeeList = () => {
 
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
+  const [totalElements, setTotalElements] = useState(0);
   const [isFirst, setIsFirst] = useState(true);
   const [isLast, setIsLast] = useState(true);
 
-  const [viewMode, setViewMode] = useState<ViewMode>("all");
+  // All filters coexist and are sent together on every request.
+  const [searchName, setSearchName] = useState("");
   const [department, setDepartment] = useState("");
   const [designation, setDesignation] = useState("");
   const [sortBy, setSortBy] = useState<SortOption>("");
+  const [sortDir, setSortDir] = useState<SortDir>("asc");
 
   const [employeeToDelete, setEmployeeToDelete] = useState<Employee | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -40,15 +44,24 @@ const EmployeeList = () => {
 
   const successMessage = location.state?.message;
 
-  const fetchEmployees = useCallback(async (pageToFetch: number) => {
+  const fetchEmployees = useCallback(async () => {
     try {
       setLoading(true);
       setError("");
 
-      const data = await employeeService.getAllEmployees(pageToFetch, PAGE_SIZE);
+      const data = await employeeService.filterEmployees({
+        name: searchName,
+        department,
+        designation,
+        sortBy,
+        sortDir,
+        page,
+        size: PAGE_SIZE,
+      });
 
       setEmployees(data.content);
       setTotalPages(data.totalPages);
+      setTotalElements(data.totalElements);
       setIsFirst(data.first);
       setIsLast(data.last);
       setPage(data.number);
@@ -58,118 +71,31 @@ const EmployeeList = () => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [searchName, department, designation, sortBy, sortDir, page]);
 
   useEffect(() => {
-    if (viewMode === "all") {
-      fetchEmployees(page);
-    }
-  }, [page, viewMode, fetchEmployees]);
+    fetchEmployees();
+  }, [fetchEmployees]);
 
   const handleAddEmployee = () => navigate("/employees/add");
-
-  const handleRefresh = () => {
-    if (viewMode === "all") fetchEmployees(page);
-  };
+  const handleRefresh = () => fetchEmployees();
 
   const handlePrev = () => { if (!isFirst) setPage((p) => p - 1); };
   const handleNext = () => { if (!isLast) setPage((p) => p + 1); };
 
-  const resetToAll = () => {
-    setViewMode("all");
-    setDepartment("");
-    setDesignation("");
-    setSortBy("");
+  const handleSearch = (name: string) => { setPage(0); setSearchName(name); };
+  const handleClearSearch = () => { setPage(0); setSearchName(""); };
+  const handleDepartmentChange = (value: string) => { setPage(0); setDepartment(value); };
+  const handleDesignationChange = (value: string) => { setPage(0); setDesignation(value); };
+  const handleSortChange = (value: SortOption) => { setPage(0); setSortBy(value); };
+  const handleSortDirChange = (value: SortDir) => { setPage(0); setSortDir(value); };
+
+  const handleResetFilters = () => {
     setPage(0);
-  };
-
-  const handleSearch = async (name: string) => {
-    try {
-      setLoading(true);
-      setError("");
-
-      const results = await employeeService.searchByName(name);
-
-      setEmployees(results);
-      setViewMode("search");
-    } catch (error) {
-      console.error("Failed to search employees:", error);
-      setError("Failed to search employees. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleDepartmentChange = async (value: string) => {
-    setDepartment(value);
-    setDesignation("");
-    setSortBy("");
-
-    if (!value) { resetToAll(); return; }
-
-    try {
-      setLoading(true);
-      setError("");
-
-      const results = await employeeService.getByDepartment(value);
-
-      setEmployees(results);
-      setViewMode("filtered");
-    } catch (error) {
-      console.error("Failed to filter by department:", error);
-      setError("Failed to filter employees. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleDesignationChange = async (value: string) => {
-    setDesignation(value);
-    setDepartment("");
-    setSortBy("");
-
-    if (!value) { resetToAll(); return; }
-
-    try {
-      setLoading(true);
-      setError("");
-
-      const results = await employeeService.getByDesignation(value);
-
-      setEmployees(results);
-      setViewMode("filtered");
-    } catch (error) {
-      console.error("Failed to filter by designation:", error);
-      setError("Failed to filter employees. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleSortChange = async (value: SortOption) => {
-    setSortBy(value);
     setDepartment("");
     setDesignation("");
-
-    if (!value) { resetToAll(); return; }
-
-    try {
-      setLoading(true);
-      setError("");
-
-      const results =
-        value === "salary"
-          ? await employeeService.sortBySalary()
-          : await employeeService.sortByJoiningDate();
-
-      setEmployees(results);
-      setViewMode("filtered");
-    } catch (error) {
-      console.error("Failed to sort employees:", error);
-      setError("Failed to sort employees. Please try again.");
-    } finally {
-      setLoading(false);
-    }
+    setSortBy("");
+    setSortDir("asc");
   };
 
   const handleDeleteClick = (employee: Employee) => setEmployeeToDelete(employee);
@@ -182,14 +108,8 @@ const EmployeeList = () => {
 
       await employeeService.deleteEmployee(employeeToDelete.id);
 
-      const deletedId = employeeToDelete.id;
       setEmployeeToDelete(null);
-
-      if (viewMode === "all") {
-        fetchEmployees(page);
-      } else {
-        setEmployees((previous) => previous.filter((e) => e.id !== deletedId));
-      }
+      fetchEmployees();
     } catch (error) {
       console.error("Failed to delete employee:", error);
       setError("Failed to delete employee. Please try again.");
@@ -218,16 +138,18 @@ const EmployeeList = () => {
       )}
 
       <div className="d-flex flex-wrap gap-3 justify-content-between mb-3">
-        <SearchBar onSearch={handleSearch} onClear={resetToAll} isSearching={loading} />
+        <SearchBar onSearch={handleSearch} onClear={handleClearSearch} isSearching={loading} />
 
         <FilterComponent
           department={department}
           designation={designation}
           sortBy={sortBy}
+          sortDir={sortDir}
           onDepartmentChange={handleDepartmentChange}
           onDesignationChange={handleDesignationChange}
           onSortChange={handleSortChange}
-          onReset={resetToAll}
+          onSortDirChange={handleSortDirChange}
+          onReset={handleResetFilters}
           isLoading={loading}
         />
       </div>
@@ -250,7 +172,7 @@ const EmployeeList = () => {
       {!loading && !error && employees.length > 0 && (
         <>
           <div className="d-flex justify-content-between align-items-center mb-3">
-            <span className="text-muted">Total Employees: {employees.length}</span>
+            <span className="text-muted">Total Employees: {totalElements}</span>
 
             <button type="button" className="btn btn-outline-secondary" onClick={handleRefresh}>
               Refresh
@@ -259,16 +181,14 @@ const EmployeeList = () => {
 
           <EmployeeTable employees={employees} onDeleteClick={handleDeleteClick} />
 
-          {viewMode === "all" && (
-            <Pagination
-              currentPage={page}
-              totalPages={totalPages}
-              isFirst={isFirst}
-              isLast={isLast}
-              onPrev={handlePrev}
-              onNext={handleNext}
-            />
-          )}
+          <Pagination
+            currentPage={page}
+            totalPages={totalPages}
+            isFirst={isFirst}
+            isLast={isLast}
+            onPrev={handlePrev}
+            onNext={handleNext}
+          />
         </>
       )}
 
