@@ -2,9 +2,6 @@ package com.avh.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
@@ -71,6 +68,8 @@ public class Employee {
 		this.address = address;
 		this.joiningDate = joiningDate;
 	}
+	public Employee() {
+    }
 
 	public Long getId() {
 		return id;
