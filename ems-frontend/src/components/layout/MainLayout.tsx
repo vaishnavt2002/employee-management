@@ -4,15 +4,15 @@ import Footer from "./Footer";
 
 const MainLayout = () => {
   return (
-    <>
+    <div className="d-flex flex-column min-vh-100">
       <Navbar />
 
-      <main className="container my-4">
+      <main className="container my-4 flex-grow-1">
         <Outlet />
       </main>
 
       <Footer />
-    </>
+    </div>
   );
 };
 

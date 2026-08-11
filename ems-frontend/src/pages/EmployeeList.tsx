@@ -198,10 +198,6 @@ const EmployeeList = () => {
     }
   };
 
-  if (loading) {
-    return <Loading />;
-  }
-
   return (
     <div className="container mt-4">
       <div className="d-flex justify-content-between align-items-center mb-4">
@@ -236,7 +232,9 @@ const EmployeeList = () => {
         />
       </div>
 
-      {error && (
+      {loading && <Loading />}
+
+      {!loading && error && (
         <div>
           <ErrorMessage message={error} />
           <button type="button" className="btn btn-outline-primary" onClick={handleRefresh}>
@@ -245,11 +243,11 @@ const EmployeeList = () => {
         </div>
       )}
 
-      {!error && employees.length === 0 && (
+      {!loading && !error && employees.length === 0 && (
         <EmptyState message="No employees found." />
       )}
 
-      {!error && employees.length > 0 && (
+      {!loading && !error && employees.length > 0 && (
         <>
           <div className="d-flex justify-content-between align-items-center mb-3">
             <span className="text-muted">Total Employees: {employees.length}</span>
