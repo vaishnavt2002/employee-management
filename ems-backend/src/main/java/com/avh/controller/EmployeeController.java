@@ -114,4 +114,35 @@ public class EmployeeController {
         long count = employeeService.getEmployeeCount();
         return new ResponseEntity<>(count, HttpStatus.OK);
     }
+
+    // GET /employees/filter -> Combined search + filter + sort, all applied together.
+    // Every param is optional and can be freely combined:
+    //   name         -> partial, case-insensitive match on employee name
+    //   department   -> exact, case-insensitive match on department
+    //   designation  -> exact, case-insensitive match on designation
+    //   sortBy       -> name | department | designation | salary | joiningDate
+    //   sortDir      -> asc | desc (default asc)
+    //   page, size   -> pagination (default 0, 10)
+    //
+    // Example: /employees/filter?name=john&department=Engineering&sortBy=salary&sortDir=desc
+    // returns only employees named "john" in Engineering, sorted by salary desc -
+    // unlike the separate /search, /department/{}, /sort/salary endpoints above,
+    // which each query the full table independently and cannot be combined.
+    @GetMapping("/filter")
+    public ResponseEntity<Page<Employee>> filterEmployees(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String department,
+            @RequestParam(required = false) String designation,
+            @RequestParam(required = false) String sortBy,
+            @RequestParam(defaultValue = "asc") String sortDir,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        logger.info(
+                "Received request to filter employees - name: {}, department: {}, designation: {}, sortBy: {}, sortDir: {}",
+                name, department, designation, sortBy, sortDir);
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Employee> employees = employeeService.searchAndFilter(name, department, designation, sortBy, sortDir,
+                pageable);
+        return new ResponseEntity<>(employees, HttpStatus.OK);
+    }
 }
