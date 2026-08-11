@@ -27,4 +27,6 @@ public interface EmployeeService {
     List<Employee> sortBySalary();
 
     List<Employee> sortByJoiningDate();
+    
+    long getEmployeeCount();
 }

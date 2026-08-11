@@ -106,4 +106,12 @@ public class EmployeeController {
         List<Employee> employees = employeeService.sortByJoiningDate();
         return new ResponseEntity<>(employees, HttpStatus.OK);
     }
+    
+ // GET /employees/count -> Get total count of employees
+    @GetMapping("/count")
+    public ResponseEntity<Long> getEmployeeCount() {
+        logger.info("Received request to fetch total employee count");
+        long count = employeeService.getEmployeeCount();
+        return new ResponseEntity<>(count, HttpStatus.OK);
+    }
 }
